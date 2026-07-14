@@ -15,7 +15,7 @@ def derive_key(password, salt):
 
 # Encrypts a file using AES-GCM with a password-derived key from calling the derive_key function. The builds and
 # writes the header
-def encrpt_file(input_path, output_path, password):
+def encrypt_file(input_path, output_path, password):
   # Generate a random salt and nonce
   salt = os.urandom(SALT_SIZE)
   nonce = os.urandom(NONCE_SIZE)
@@ -38,7 +38,7 @@ def encrpt_file(input_path, output_path, password):
 
 # Handles reading the encrpyted file then parses the header and decrypts the data using AES-GCM with a password-derived key
 # from calling the derive_key function.
-def decrpyt_file(input_path, output_path, password):
+def decrypt_file(input_path, output_path, password):
   with open(input_path, 'rb') as f:
     data = f.read()
 
