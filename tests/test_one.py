@@ -26,3 +26,7 @@ def test_basic_cli():
   # Ensures that original text file matches with the decrypted file
   assert text == info
 
+  # Delete files for cleanup
+  os.remove(input_path)
+  os.remove(output_path)
+  os.remove(decrypt_path)
