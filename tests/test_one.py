@@ -5,9 +5,9 @@ from src.container_format import *
 # easier debugging tips
 def test_basic_cli():
   # Setting up basic input data for calling the functions from crypto_core.py
-  input_path="test_file_one.txt"
-  output_path="test_file_one.zcv"
-  decrypt_path="test_file_one.dec"
+  input_path="tests/test_file_one.txt"
+  output_path="tests/test_file_one.zcv"
+  decrypt_path="tests/test_file_one.dec"
   sample_password="password123"
   text="Writing Secret Message Into The File"
 
