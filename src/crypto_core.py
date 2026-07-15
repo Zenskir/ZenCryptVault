@@ -1,4 +1,4 @@
-from container_format import *
+from .container_format import *
 
 # password-based key derivation function using HMAC-SHA256 for deriving cryptographic keys from
 # passwords or for securely storing passwords.

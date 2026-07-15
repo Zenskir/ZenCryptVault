@@ -1,4 +1,4 @@
-import argparse
+import argparse, sys
 from crypto_core import encrypt_file, decrypt_file
 
 
@@ -25,10 +25,24 @@ def main():
   # Executing the command depending on the command provided
   if (args.command == 'encrypt'):
     output = args.output or args.input_file + '.zcv'
-    encrypt_file(args.input_file, output, args.password)
+    try:
+      encrypt_file(args.input_file, output, args.password)
+    except FileNotFoundError:
+      print("Exception error occured: missing input files")
+      sys.exit(1)
+    except ValueError:
+        print("Exception error occured: errors raised from the other functions in src folder")
+        sys.exit(1)
   elif (args.command == 'decrypt'):
     output = args.output or args.input_file.replace('.zcv', '.dec')
-    decrypt_file(args.input_file, output, args.password)
+    try:
+      decrypt_file(args.input_file, output, args.password)
+    except FileNotFoundError:
+      print("Exception error occured: missing input files")
+      sys.exit(1)
+    except ValueError:
+        print("Exception error occured: errors raised from the other functions in src folder")
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
