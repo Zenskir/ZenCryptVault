@@ -1,27 +1,25 @@
-from .container_format import *
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.exceptions import InvalidTag
+from kdf import derive_key
+from container_format import *
+from keyfile import *
 
-# password-based key derivation function using HMAC-SHA256 for deriving cryptographic keys from
-# passwords or for securely storing passwords.
-def derive_key(password, salt):
-  # Note that the salt is unique and randomly generated
-  kdf = PBKDF2HMAC(
-    algorithm=hashes.SHA256(),
-    length=KEY_SIZE,
-    salt=salt,
-    iterations=PBKDF2_ITERATIONS,
-  )
-  # Returns the key in the format of bytes and its length specified by the container format
-  return kdf.derive(password.encode('utf-8'))
 
 # Encrypts a file using AES-GCM with a password-derived key from calling the derive_key function. The builds and
 # writes the header
-def encrypt_file(input_path, output_path, password):
-  # Generate a random salt and nonce
+# Refactor Note: Made changes to encrpyt_file after adding the feature of a keyfile, where the function
+#                accepts the key as an argument instead of a password. Deriving logic will be done in
+#                in main function.
+def encrypt_file(input_path, output_path, password=None, keyfile=None):
   salt = os.urandom(SALT_SIZE)
   nonce = os.urandom(NONCE_SIZE)
 
-  # Derive the key from the password and salt
-  key = derive_key(password, salt)
+  if keyfile:
+        key = derive_keyfile(keyfile, salt)
+  elif password:
+        key = derive_key(password, salt)
+  else:
+        raise ValueError("Must provide either a password or a file containing a key")
 
   # Read the input file
   with open(input_path, 'rb') as f:
@@ -38,13 +36,19 @@ def encrypt_file(input_path, output_path, password):
 
 # Handles reading the encrpyted file then parses the header and decrypts the data using AES-GCM with a password-derived key
 # from calling the derive_key function.
-def decrypt_file(input_path, output_path, password):
+# Refactor Note: Same thing applies here for the key file feature in encrpytion function
+def decrypt_file(input_path, output_path, password=None, keyfile=None):
   with open(input_path, 'rb') as f:
     data = f.read()
 
   salt, nonce, ciphertext = parse_header(data)
-  # Derive the key from the password and salt
-  key = derive_key(password, salt)
+
+  if keyfile:
+    key = derive_keyfile(keyfile, salt)
+  elif password:
+    key = derive_key(password, salt)
+  else:
+    raise ValueError("Must provide either a password or a file containing a key")
 
   # Decrypt the data using AES-GCM
   aesgcm = AESGCM(key)
