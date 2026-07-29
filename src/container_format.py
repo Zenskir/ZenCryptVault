@@ -8,10 +8,12 @@ from cryptography.exceptions import InvalidTag
 
 MAGIC = b"ZCV1"          # 4 bytes - identifies our file format
 VERSION = b"\x01"        # 1 byte - format version
-SALT_SIZE = 16           # bytes
-NONCE_SIZE = 12          # bytes - standard for GCM
+SALT_SIZE = 16           # 16 bytes
+NONCE_SIZE = 12          # 12 bytes - standard for GCM
 KEY_SIZE = 32            # 32 bytes = 256 bits for AES-256
 PBKDF2_ITERATIONS = 200_000
+CHUNK_SIZE = 64 * 1024 # Chunk Size for parsing - 16 KB for a more practical convention
+NONCE_PREFIX = 8 # 8 Bytes - for randomized prefix for the nonce (each time its run will be unique)
 
 # handles packing the header of the encrypted file and returns the bytes to be written to the file
 def pack_header(salt, nonce):

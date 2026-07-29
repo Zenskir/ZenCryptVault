@@ -1,5 +1,6 @@
 from src.crypto_core import *
 from src.container_format import *
+from src.kdf import *
 
 # Basic testing to ensure basic CLI functionality using the pytest library to ensure
 # easier debugging tips
