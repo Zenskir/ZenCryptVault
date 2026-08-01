@@ -27,6 +27,18 @@ def main():
   decrypt_parser.add_argument('-p', '--password')
   decrypt_parser.add_argument('-k', '--keyfile', help='path to file containing the key (alternate method to a password)')
 
+  encrpyt_chunk_parser = subparsers.add_parser('encrypt-chunk')
+  encrpyt_chunk_parser.add_argument('input_file')
+  encrpyt_chunk_parser.add_argument('-o', '--output', help='output file path')
+  encrpyt_chunk_parser.add_argument('-p', '--password')
+  encrpyt_chunk_parser.add_argument('-k', '--keyfile', help='path to file containing the key (alternate method to a password)')
+
+  decrypt_chunk_parser = subparsers.add_parser('decrypt-chunk')
+  decrypt_chunk_parser.add_argument('input_file')
+  decrypt_chunk_parser.add_argument('-o', '--output', help='output file path')
+  decrypt_chunk_parser.add_argument('-p', '--password')
+  decrypt_chunk_parser.add_argument('-k', '--keyfile', help='path to file containing the key (alternate method to a password)')
+
   generator_parser = subparsers.add_parser('generate-keyfile')
   generator_parser.add_argument('output_path')
   generator_parser.add_argument('-s', '--size', type=int, default=64)
