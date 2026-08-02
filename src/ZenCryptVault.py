@@ -3,6 +3,7 @@
 # Imported libraries
 import argparse, sys, os
 from crypto_core import encrypt_file, decrypt_file, derive_key
+from chunked_crypto import chunk_encryption, chunk_decryption
 from keyfile import generate_keyfile, derive_keyfile
 from container_format import *
 
@@ -64,6 +65,30 @@ def main():
     output = args.output or args.input_file.replace('.zcv', '.dec')
     try:
       decrypt_file(args.input_file, output, password=args.password, keyfile=args.keyfile)
+    except FileNotFoundError:
+      print("Exception error occured: missing input files")
+      sys.exit(1)
+    except ValueError as e:
+      print(f"Exception error occurred: {e}")
+      sys.exit(1)
+  elif (args.command == 'encrypt-chunk'):
+    if not args.password and not args.keyfile:
+      parser.error("Must provide either --password or --keyfile")
+    output = args.output or args.input_file + '.zcv'
+    try:
+      chunk_encryption(args.input_file, output, password=args.password, keyfile=args.keyfile)
+    except FileNotFoundError:
+      print("Exception error occured: missing input files")
+      sys.exit(1)
+    except ValueError as e:
+      print(f"Exception error occurred: {e}")
+      sys.exit(1)
+  elif (args.command == 'decrypt-chunk'):
+    if not args.password and not args.keyfile:
+      parser.error("Must provide either --password or --keyfile")
+    output = args.output or args.input_file.replace('.zcv', '.dec')
+    try:
+      chunk_decryption(args.input_file, output, password=args.password, keyfile=args.keyfile)
     except FileNotFoundError:
       print("Exception error occured: missing input files")
       sys.exit(1)
