@@ -62,9 +62,9 @@ def main():
   elif (args.command == 'decrypt'):
     if not args.password and not args.keyfile:
       parser.error("Must provide either --password or --keyfile")
-    output = args.output or args.input_file.replace('.zcv', '.dec')
     try:
-      decrypt_file(args.input_file, output, password=args.password, keyfile=args.keyfile)
+      output = decrypt_file(args.input_file, args.output, password=args.password, keyfile=args.keyfile)
+      print(f"Decrypted to {output}")
     except FileNotFoundError:
       print("Exception error occured: missing input files")
       sys.exit(1)

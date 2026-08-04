@@ -3,6 +3,7 @@ from cryptography.exceptions import InvalidTag
 from kdf import derive_key
 from container_format import *
 from keyfile import *
+from metadata import pack_metadata, unpack_metadata
 
 
 # Encrypts a file using AES-GCM with a password-derived key from calling the derive_key function. The builds and
@@ -25,9 +26,14 @@ def encrypt_file(input_path, output_path, password=None, keyfile=None):
   with open(input_path, 'rb') as f:
     plaintext = f.read()
 
+  # prepare metadata for encryption - added addition for metadata functionalitity
+  original_filename = os.path.basename(input_path)
+  metadata_block = pack_metadata(original_filename)
+  combined_data = metadata_block + plaintext
+
   # Encrypt the data using AES-GCM
   aesgcm = AESGCM(key)
-  ciphertext = aesgcm.encrypt(nonce, plaintext, None)
+  ciphertext = aesgcm.encrypt(nonce, combined_data, None)
 
   # Write the header and encrypted data to the output file
   with open(output_path, 'wb') as f:
@@ -37,7 +43,7 @@ def encrypt_file(input_path, output_path, password=None, keyfile=None):
 # Handles reading the encrpyted file then parses the header and decrypts the data using AES-GCM with a password-derived key
 # from calling the derive_key function.
 # Refactor Note: Same thing applies here for the key file feature in encrpytion function
-def decrypt_file(input_path, output_path, password=None, keyfile=None):
+def decrypt_file(input_path, output_path=None, password=None, keyfile=None):
   with open(input_path, 'rb') as f:
     data = f.read()
 
@@ -57,6 +63,13 @@ def decrypt_file(input_path, output_path, password=None, keyfile=None):
   except InvalidTag:
     raise ValueError("Decryption failed. Invalid password or corrupted data.")
 
+  metadata, real_content = unpack_metadata(plaintext)
+
+  if output_path is None:
+     output_path = metadata.get("filename", "decrypted_output")
+
   # Write the decrypted data to the output file
   with open(output_path, 'wb') as f:
-    f.write(plaintext)
+    f.write(real_content)
+
+  return output_path
